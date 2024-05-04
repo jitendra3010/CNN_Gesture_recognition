@@ -15,7 +15,7 @@ class Generator:
     Class to generator the data for the model training
     '''
 
-    def __init__(self, folder_path, train_dir, val_dir, train_flag, batch_size, imgTensor):
+    def __init__(self, folder_path, train_dir, val_dir, train_flag, batch_size, imgTensor, augmentation):
         '''
         Initialization of different parameters for custom data preparation
         '''
@@ -42,6 +42,7 @@ class Generator:
 
         self.batch_size = batch_size
         self.img_tensor = imgTensor
+        self.augmentation = augmentation
 
     def cropResize(self, image, y, z):
         h, w = image.shape
@@ -79,17 +80,17 @@ class Generator:
 
              # we iterate over the number of batches
             for batch in range(num_batches):
-                yield self.getBatchData(t, batch, True)
+                yield self.getBatchData(t, batch)
             
             # write the code for the remaining data points which are left after full batches
             # checking if any remaining batches are there or not
             if len(self.folder_list)%self.batch_size != 0:
                 # updated the batch size and yield
                 self.batch_size = len(self.folder_list)%self.batch_sizebatch_size
-                yield self.getBatchData(t, batch, True)
+                yield self.getBatchData(t, batch)
 
     
-    def getBatchData(self, t, batch,augment=False):
+    def getBatchData(self, t, batch):
 
         img_tensor = self.img_tensor
 
@@ -98,7 +99,7 @@ class Generator:
         batch_data = np.zeros((self.batch_size,x,y,z,3)) # x is the number of images you use for each video, (y,z) is the final size of the input images and 3 is the number of channels RGB
         batch_labels = np.zeros((self.batch_size,5)) # batch_labels is the one hot representation of the output
         
-        if (augment): 
+        if (self.augmentation): 
             batch_data_aug = np.zeros((self.batch_size,x,y,z,3))
         
         for folder in range(self.batch_size): # iterate over the batch_size
@@ -113,7 +114,7 @@ class Generator:
                 batch_data[folder,idx,:,:,0] = self.preprocessImage(image[:, :, 0], y, z)
                 batch_data[folder,idx,:,:,1] = self.preprocessImage(image[:, :, 1], y, z)
                 batch_data[folder,idx,:,:,2] = self.preprocessImage(image[:, :, 2], y, z)
-                if (augment):
+                if (self.augmentation):
                     shifted = cv2.warpAffine(image, 
                                         np.float32([[1, 0, np.random.randint(-30,30)],[0, 1, np.random.randint(-30,30)]]),
                                         (image.shape[1], image.shape[0]))
@@ -136,7 +137,7 @@ class Generator:
 
             batch_labels[folder, int(t[folder + (batch*self.batch_size)].strip().split(';')[2])] = 1
             
-            if (augment):
+            if (self.augmentation):
                 batch_data=np.concatenate([batch_data,batch_data_aug])
                 batch_labels=np.concatenate([batch_labels,batch_labels])
         return batch_data, batch_labels
