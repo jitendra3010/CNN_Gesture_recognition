@@ -43,11 +43,11 @@ def main(train_flag):
     # initialize the training and validation data
     generator_trn = Generator(folder_path, train_dir, val_dir, train_flag, batch_size=batch_size, imgTensor=image_tensor, augmentation=augmentation)
     train_generator = generator_trn.generator()
-    num_train_sequences = generator_trn.no_of_sequence
+    #num_train_sequences = generator_trn.no_of_sequence
 
     generator_val = Generator(folder_path, train_dir, val_dir, False, batch_size=batch_size, imgTensor=image_tensor, augmentation=augmentation)
     val_generator = generator_val.generator()
-    num_val_sequences = generator_val.no_of_sequence
+    #num_val_sequences = generator_val.no_of_sequence
 
     # compute the training an validation steps
     steps_per_epoch = generator_trn.calculateSteps()
