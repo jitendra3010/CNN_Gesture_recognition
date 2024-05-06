@@ -61,12 +61,6 @@ class Generator:
     def preprocessImage(self,image, y, z):
         return self.normalizeImage(self.cropResize(image, y, z))
     
-    def make3dFilter(self,x):
-        return tuple([x]*3)
-
-    def make2dFilter(self, x):
-        return tuple([x]*2)
-    
     def generator(self):
         '''
         Function to generate the data for model
@@ -96,9 +90,13 @@ class Generator:
 
         [x,y,z] = [len(img_tensor[0]),img_tensor[1], img_tensor[2]]
         img_idx = img_tensor[0]
-        batch_data = np.zeros((self.batch_size,x,y,z,3)) # x is the number of images you use for each video, (y,z) is the final size of the input images and 3 is the number of channels RGB
+
+        # x is the number of images you use for each video, (y,z) is the final size of the input images and 3 is the number of channels RGB
+        batch_data = np.zeros((self.batch_size,x,y,z,3)) 
         batch_labels = np.zeros((self.batch_size,5)) # batch_labels is the one hot representation of the output
         
+        # if augmentation is set to true
+        # create the augmented data
         if (self.augmentation): 
             batch_data_aug = np.zeros((self.batch_size,x,y,z,3))
         
@@ -114,6 +112,7 @@ class Generator:
                 batch_data[folder,idx,:,:,0] = self.preprocessImage(image[:, :, 0], y, z)
                 batch_data[folder,idx,:,:,1] = self.preprocessImage(image[:, :, 1], y, z)
                 batch_data[folder,idx,:,:,2] = self.preprocessImage(image[:, :, 2], y, z)
+                
                 if (self.augmentation):
                     shifted = cv2.warpAffine(image, 
                                         np.float32([[1, 0, np.random.randint(-30,30)],[0, 1, np.random.randint(-30,30)]]),
@@ -122,7 +121,8 @@ class Generator:
                     gray = cv2.cvtColor(shifted,cv2.COLOR_BGR2GRAY)
 
                     x0, y0 = np.argwhere(gray > 0).min(axis=0)
-                    x1, y1 = np.argwhere(gray > 0).max(axis=0) 
+                    x1, y1 = np.argwhere(gray > 0).max(axis=0)
+                     
                     # cropping the images to have the targeted gestures and remove the noise from the images.
                     cropped=shifted[x0:x1,y0:y1,:]
                     image_resized=resize(cropped,(y,z,3))

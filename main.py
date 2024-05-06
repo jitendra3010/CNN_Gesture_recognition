@@ -10,6 +10,7 @@ import warnings
 warnings.filterwarnings('ignore')
 from Generator import Generator
 from ImageTensor import ImageTensor
+from PlotShowData import PlotShowData
 
 def main(train_flag):
 
@@ -21,19 +22,24 @@ def main(train_flag):
 
     print ('# img_tensor =', image_tensor)
     
-    if train_flag:
+    generator = Generator(folder_path, train_dir, val_dir, train_flag, batch_size=20, imgTensor=image_tensor, augmentation=augmentation)
+    sample_generator = generator.generator()
+    # print(sample_generator)
 
-        generator = Generator(folder_path, train_dir, val_dir, train_flag, batch_size=20, imgTensor=image_tensor, augmentation=augmentation)
-        sample_generator = generator.generator()
-        # print(sample_generator)
+    sample_batch_data, sample_batch_labels = next(sample_generator)
 
-        sample_batch_data, sample_batch_labels = next(sample_generator)
+    print(len(sample_batch_data), len(sample_batch_labels))
+    print(sample_batch_data.shape, sample_batch_labels.shape)
+    # print("****Batch Data****")
+    # print(sample_batch_data[:5])
+    # print("\n****Batch labels****")
+    # print(sample_batch_labels[:5])
 
-        print(len(sample_batch_data), len(sample_batch_labels))
-        # print("****Batch Data****")
-        # print(sample_batch_data[:5])
-        # print("\n****Batch labels****")
-        # print(sample_batch_labels[:5])
+    pltShow = PlotShowData()
+    pltShow.plotSampleImage(sample_batch_data)
+
+
+
 
 
 if __name__ == '__main__':
@@ -45,4 +51,4 @@ if __name__ == '__main__':
 
     # print(os.path.join(val_dir,"val.csv"))
     augmentation = False
-    main(train_flag=True)
+    main(train_flag=False)
