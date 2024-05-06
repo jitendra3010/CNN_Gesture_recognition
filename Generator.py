@@ -40,6 +40,9 @@ class Generator:
             self.source_path = self.val_dir
             self.folder_list = np.random.permutation(open(self.val_file).readlines())
 
+        # set the no of sequence for whether its taining or validation
+        # set bachsize, imgtensor and aurgmentation parameter
+        self.no_of_sequence = len(self.folder_list)
         self.batch_size = batch_size
         self.img_tensor = imgTensor
         self.augmentation = augmentation
@@ -80,7 +83,7 @@ class Generator:
             # checking if any remaining batches are there or not
             if len(self.folder_list)%self.batch_size != 0:
                 # updated the batch size and yield
-                self.batch_size = len(self.folder_list)%self.batch_sizebatch_size
+                self.batch_size = len(self.folder_list)%self.batch_size
                 yield self.getBatchData(t, batch)
 
     
@@ -122,7 +125,7 @@ class Generator:
 
                     x0, y0 = np.argwhere(gray > 0).min(axis=0)
                     x1, y1 = np.argwhere(gray > 0).max(axis=0)
-                     
+
                     # cropping the images to have the targeted gestures and remove the noise from the images.
                     cropped=shifted[x0:x1,y0:y1,:]
                     image_resized=resize(cropped,(y,z,3))
@@ -141,3 +144,14 @@ class Generator:
                 batch_data=np.concatenate([batch_data,batch_data_aug])
                 batch_labels=np.concatenate([batch_labels,batch_labels])
         return batch_data, batch_labels
+    
+    def calculateSteps(self):
+        '''
+        Compute the no of steps
+        '''
+        if (self.no_of_sequence%self.batch_size) == 0:
+            steps = int(self.no_of_sequence/self.batch_size)
+        else:
+            steps = (self.no_of_sequence//self.batch_size) + 1
+
+        return steps
