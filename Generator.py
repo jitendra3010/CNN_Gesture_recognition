@@ -102,6 +102,7 @@ class Generator:
         # create the augmented data
         if (self.augmentation): 
             batch_data_aug = np.zeros((self.batch_size,x,y,z,3))
+            batch_labels_aug = np.zeros((self.batch_size,5))
         
         for folder in range(self.batch_size): # iterate over the batch_size
             imgs = os.listdir(self.source_path+'/'+ t[folder + (batch*self.batch_size)].split(';')[0]) # read all the images in the folder
@@ -137,12 +138,17 @@ class Generator:
                     batch_data_aug[folder,idx,:,:,0] = (image_resized[:,:,0])/255
                     batch_data_aug[folder,idx,:,:,1] = (image_resized[:,:,1])/255
                     batch_data_aug[folder,idx,:,:,2] = (image_resized[:,:,2])/255
+                    
+                    batch_labels_aug[folder, int(t[folder + (batch*self.batch_size)].strip().split(';')[2])] = 1
 
             batch_labels[folder, int(t[folder + (batch*self.batch_size)].strip().split(';')[2])] = 1
+            # print(len(batch_labels))
             
             if (self.augmentation):
                 batch_data=np.concatenate([batch_data,batch_data_aug])
-                batch_labels=np.concatenate([batch_labels,batch_labels])
+                batch_labels=np.concatenate([batch_labels,batch_labels_aug])
+                # print("augmented::", len(batch_data))
+                # print("augmented::", len(batch_labels))
         return batch_data, batch_labels
     
     def calculateSteps(self):

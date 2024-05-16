@@ -11,7 +11,7 @@ class PlotShowData:
         ax[1].imshow(sample_batch_data[19,10,:,:,:])
         plt.show()
 
-    def plotModelHistory(h):
+    def plotModelHistory(self, h):
         '''
         Function to plot the model history details
         '''
