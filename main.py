@@ -61,7 +61,7 @@ def main(train_flag):
 
         # initialize and compile the model
         model = CNN(image_tensor)
-        model.initializeModel()
+        model.initializeModel('MODEL2')
         model.compileModel()
 
         # set up the callback for the model fit
@@ -74,22 +74,49 @@ def main(train_flag):
        # model.
         pltShow = PlotShowData()
         pltShow.plotModelHistory(model.history)
+
+        #predictions = model.predictModel(val_generator)
+
     else:
         generator_val = Generator(folder_path, train_dir, val_dir, False, batch_size=batch_size, imgTensor=image_tensor, augmentation=augmentation)
         val_generator = generator_val.generator()
+        validation_steps = generator_val.calculateSteps()
 
         model = CNN.loadModel('/Users/jiten/Masters/Compute vision - CSC 528/CNN_Gesture_recognition/model_init_2024-05-1522_45_47.146370/model-keras')
 
         model.summary()
 
-        sample_batch_data, sample_batch_labels = next(val_generator)
+        # Create empty lists to store the actual and predicted labels
+        actual_labels = []
+        predicted_labels = []
 
-        print("Before Predict")
-        predict = model.predict_generator(sample_batch_data)
-        print("After Predict")
-        print(len(predict))
+        # Iterate over the generator to obtain the actual labels
+        for i in range(validation_steps):
+            # Get the next batch of images and labels from the generator
+            batch_x, batch_y = next(val_generator)
+    
+            # Convert one-hot encoded labels to class indices
+            actual_labels.extend(np.argmax(batch_y, axis=1))
+    
+            # Make predictions for the batch
+            predictions = model.predict(batch_x)
+    
+            # Convert predicted probabilities to class indices
+            predicted_labels.extend(np.argmax(predictions, axis=1))
 
-        showReport(sample_batch_labels, predict)
+        # Convert the lists to NumPy arrays for compatibility with confusion_matrix
+        actual_labels = np.array(actual_labels)
+        predicted_labels = np.array(predicted_labels)
+
+        #sample_batch_data, sample_batch_labels = next(val_generator)
+
+        # print("Before Predict")
+        # predict = model.predict_generator(val_generator, steps=validation_steps)
+        # #predict  = model.pred
+        # print("After Predict")
+        # print(len(predict))
+
+        showReport(actual_labels, predicted_labels)
 
 
         

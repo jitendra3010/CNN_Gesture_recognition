@@ -29,6 +29,7 @@ class PlotShowData:
         ax[1].plot(h.history['val_categorical_accuracy'])
         ax[1].legend(['categorical_accuracy','val_categorical_accuracy'])
         ax[1].title.set_text("Train accuracy vs Validation accuracy")
+        plt.savefig('report/acc_loss.png')
         plt.show()
 
         print("Max. Training Accuracy", max(h.history['categorical_accuracy']))

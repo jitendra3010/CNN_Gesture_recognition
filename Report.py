@@ -16,6 +16,7 @@ def confusionMatrix(actual_class, pred_class, y):
     plt.xlabel('Predicted labels')
     plt.ylabel('True labels')
     plt.title('Confusion Matrix Heatmap')
+    plt.savefig('report/confusionMatrix.png')
     plt.show()
 
 def getPredClass(y_actual, y_pred):
@@ -29,8 +30,8 @@ def printClassificationReport(actual_class, pred_class, y):
     print(classification_report(actual_class, pred_class, target_names=y))
 
 def showReport(y_actual, y_pred):
-    y = ['ThumbsUp', 'ThumnsDown', 'LeftSwipe', 'RightSwipe', 'Stop']
+    y = ['ThumbsUp', 'ThumbsDown', 'LeftSwipe', 'RightSwipe', 'Stop']
 
-    actual_class , pred_class = getPredClass(y_actual, y_pred)
-    confusionMatrix(actual_class, pred_class, y)
-    printClassificationReport(actual_class, pred_class, y)
+    #actual_class , pred_class = getPredClass(y_actual, y_pred)
+    confusionMatrix(y_actual, y_pred, y)
+    printClassificationReport(y_actual, y_pred, y)

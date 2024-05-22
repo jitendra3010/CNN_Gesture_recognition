@@ -21,8 +21,10 @@ class CNN:
         
 
 
-    def initializeModel(self):
+    def initializeModel(self , modelName):
         '''
+            Model1:
+            ***************
             First layer is 16 filter with each filter shape as 3D filter with relu activaiton 
             We also use a maxpooling with a 3D filter of 2,2,2 with same padding
             we also normalize the data here
@@ -40,38 +42,50 @@ class CNN:
             the above step is again repeated in one more layer haing 64 filters
 
             and then the final output layer of 5 filter with softmax activation
+
+            Model2:
+            **********
+            Model 2 is using a Trasfer Learning mobilenet with LSTM
+            We perform BatchNormalization , maxpooling with a 2D filter
+            Next layer we flatten them pass them to LSTM layer, we do a dropout of 0.2
+            and then the ouput layer is a dense layer with softmax activaiton
+
         '''
-        # self.model = Sequential([
-        #     Conv3D(16, self.make3dFilter(5), activation='relu', input_shape=self.input_shape),
-        #     MaxPooling3D(self.make3dFilter(2), padding='same'),
-        #     BatchNormalization(),
+        if modelName.upper() == 'MODEL1': 
+            self.model = Sequential([
+                Conv3D(16, self.make3dFilter(5), activation='relu', input_shape=self.input_shape),
+                MaxPooling3D(self.make3dFilter(2), padding='same'),
+                BatchNormalization(),
 
-        #     Conv3D(32, self.make3dFilter(3), activation='relu'),
-        #     MaxPooling3D(pool_size=(1,2,2), padding='same'),
-        #     BatchNormalization(),
+                Conv3D(32, self.make3dFilter(3), activation='relu'),
+                MaxPooling3D(pool_size=(1,2,2), padding='same'),
+                BatchNormalization(),
 
-        #     Conv3D(64, self.make3dFilter(3), activation='relu'),
-        #     MaxPooling3D(pool_size=(1,2,2), padding='same'),
-        #     BatchNormalization(),
+                Conv3D(64, self.make3dFilter(3), activation='relu'),
+                MaxPooling3D(pool_size=(1,2,2), padding='same'),
+                BatchNormalization(),
 
-        #     Flatten(),
-        #     Dense(128, activation='relu'),
-        #     BatchNormalization(),
-        #     Dropout(0.25),
+                Flatten(),
+                Dense(128, activation='relu'),
+                BatchNormalization(),
+                Dropout(0.25),
 
-        #     Dense(64, activation='relu'),
-        #     BatchNormalization(),
-        #     Dropout(0.25),
+                Dense(64, activation='relu'),
+                BatchNormalization(),
+                Dropout(0.25),
 
-        #     Dense(5, activation='softmax')
-        # ])
-        self.model = Sequential([TimeDistributed(self.mobilenet, input_shape=self.input_shape)], name="mobilenet_lstm")
-        self.model.add(TimeDistributed(BatchNormalization()))
-        self.model.add(TimeDistributed(MaxPooling2D(self.make2dFilter(2))))
-        self.model.add(TimeDistributed(Flatten()))
-        self.model.add(LSTM(256))
-        self.model.add(Dropout(0.2))
-        self.model.add(Dense(5, activation='softmax'))
+                Dense(5, activation='softmax')
+            ])
+        elif modelName.upper() == 'MODEL2': 
+            
+            ##### model using a mobilenet with LSTM
+            self.model = Sequential([TimeDistributed(self.mobilenet, input_shape=self.input_shape)], name="mobilenet_lstm")
+            self.model.add(TimeDistributed(BatchNormalization()))
+            self.model.add(TimeDistributed(MaxPooling2D(self.make2dFilter(2))))
+            self.model.add(TimeDistributed(Flatten()))
+            self.model.add(LSTM(256))
+            self.model.add(Dropout(0.2))
+            self.model.add(Dense(5, activation='softmax'))
 
 
     def compileModel(self):
@@ -91,10 +105,10 @@ class CNN:
 
         return load_model(filepath)
         
-    def predictModel(self, test_data):
+    def predictModel(self, test_generator):
         '''Funciton to predict the test data'''
 
-        return self.model.predict(test_data)
+        return self.model.predict_generator(test_generator, steps=len(test_generator), verbose=1)
 
     def make3dFilter(self,x):
         '''
