@@ -1,21 +1,14 @@
 import cv2
 import time
-# from torchvision import transforms
 from CNN import CNN
-from Generator import Generator
 from skimage.transform import resize
 import tensorflow as tf
 import matplotlib.pyplot as plt
 import numpy as np
 
-# transform = transforms.Compose([
-#     transforms.ToPILImage(),
-#     transforms.Resize((100, 100)),  # Resize the image to match the input size of the model
-#     transforms.ToTensor(),
-#     transforms.Normalize(mean=[0.5], std=[0.5])  # this is for Grayscale
-# ])
+
 def get_class_label(pred_idx):
-    labels = ['ThumbsUp', 'ThumbsDown', 'LeftSwipe', 'RightSwipe', 'Stop'] # Customize based on labels
+    labels = ['LeftSwipe', 'RightSwipe', 'Stop', 'ThumbsDown', 'ThumbsUp'] # Customize based on labels
     return labels[pred_idx]
 
 def loadModel():# load the existing model
@@ -50,13 +43,10 @@ def main():
     #print("Model Load Done*******")
     #model.summary()
 
-    infer = model.signatures["serving_default"]
+    #infer = model.signatures["serving_default"]
 
     # Initialize webcam
     cap = cv2.VideoCapture(0)  # '0' is typically the default value for the webcam
-    sequence_length = 20
-    # Parameters
-    input_size = (100, 100)
  
     if not cap.isOpened():
         print("Error: Could not open webcam.")
@@ -110,9 +100,12 @@ def main():
             #print("*************************",input_tensor.shape)
 
             # Perform inference
-            predictions = infer(input_tensor)
-            #predictions = model.predict(input_tensor)
-            output = predictions["dense"].numpy()
+            #predictions = infer(input_tensor)
+            predictions = model.predict(input_tensor)
+            #print(predictions)
+            #output = predictions["dense"].numpy()
+            output = predictions
+
             
             #print("******** Predicitons and prediction label***********")
             #print(output)
@@ -122,7 +115,8 @@ def main():
             #print("Prediction Label:::",labelText)
 
             label_text = f"Prediction: {labelText}"
-            cv2.putText(frame, label_text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            cv2.putText(frame, label_text, (20, 60), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 255, 0), 4)
+
 
  
         # Display the resulting frame
@@ -138,6 +132,20 @@ def main():
 
 if __name__ == '__main__':
 
-    modelToLoad = '/Users/jiten/Masters/Compute vision - CSC 528/CNN_Gesture_recognition/model_init_2024-05-1522_45_47.146370/model-keras'
+    #input_size = (100, 100)
+    # sequence_length = 20
+    #modelToLoad = '/Users/jiten/Masters/Compute vision - CSC 528/CNN_Gesture_recognition/model_init_2024-05-1522_45_47.146370/model-keras'
+    #modelToLoad = '/Users/jiten/Masters/Compute vision - CSC 528/CNN_Gesture_recognition/MODEL2_2024-05-2316_56_40.851725/model-keras'
+
+    # Parameters
+    #input_size = (128, 128)
+    #sequence_length = 30
+    #modelToLoad = '/Users/jiten/Masters/Compute vision - CSC 528/CNN_Gesture_recognition/MODEL2_2024-05-2423_33_16.378358/model-keras.keras'
+
+    input_size = (100,100)
+    sequence_length = 30
+    modelToLoad = '/Users/jiten/Masters/Compute vision - CSC 528/CNN_Gesture_recognition/ErikModel/model-keras.keras'
+
+
 
     main()

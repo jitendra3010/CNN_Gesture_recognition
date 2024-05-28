@@ -1,3 +1,4 @@
+import tensorflow as tf
 from tensorflow.keras.layers import Dense, Input
 from tensorflow.keras.models import Sequential, load_model
 
@@ -17,7 +18,7 @@ class CNN:
         self.loss = 'categorical_crossentropy'
         self.metrics = ['categorical_accuracy']
         self.curr_dt_time = datetime.datetime.now()
-        self.mobilenet = mobilenet.MobileNet(weights='imagenet', include_top=False)
+        self.mobilenet = mobilenet.MobileNet(weights='imagenet', include_top=False, input_shape=self.input_shape[1:])
         
 
 
@@ -79,6 +80,11 @@ class CNN:
         elif modelName.upper() == 'MODEL2': 
             
             ##### model using a mobilenet with LSTM
+            # with a layer of timedistributed batch normalization
+            # maxpooling 2D with filter of 2
+            # flatten the data in next layer 
+            # LSTM in next layer iwth dropout of 0.2
+            # then output layer with 5 neuron , activation as softmax
             self.model = Sequential([TimeDistributed(self.mobilenet, input_shape=self.input_shape)], name="mobilenet_lstm")
             self.model.add(TimeDistributed(BatchNormalization()))
             self.model.add(TimeDistributed(MaxPooling2D(self.make2dFilter(2))))
@@ -86,6 +92,7 @@ class CNN:
             self.model.add(LSTM(256))
             self.model.add(Dropout(0.2))
             self.model.add(Dense(5, activation='softmax'))
+
 
 
     def compileModel(self):
@@ -97,9 +104,9 @@ class CNN:
         function to fit the model
         '''
 
-        self.history = self.model.fit_generator(train_generator, steps_per_epoch=steps_per_epoch, epochs=num_epochs, verbose=1, 
-                                                callbacks=callbacks_list, validation_data=val_generator, 
-                                                validation_steps=validation_steps, class_weight=None, workers=1, initial_epoch=0)
+        self.history = self.model.fit(train_generator, steps_per_epoch=steps_per_epoch, epochs=num_epochs,
+                                      verbose=1, callbacks=callbacks_list, validation_data=val_generator,
+                                      validation_steps=validation_steps, class_weight=None, initial_epoch=0)
     
     def loadModel(filepath):
 
@@ -108,7 +115,7 @@ class CNN:
     def predictModel(self, test_generator):
         '''Funciton to predict the test data'''
 
-        return self.model.predict_generator(test_generator, steps=len(test_generator), verbose=1)
+        return self.model.predict(test_generator, steps=len(test_generator), verbose=1)
 
     def make3dFilter(self,x):
         '''
@@ -122,12 +129,12 @@ class CNN:
         '''
         return tuple([x]*2)
     
-    def callbackSetup(self):
+    def callbackSetup(self, modelName):
         '''
         Function to set the call back setup
         '''
         # model name 
-        model_name = 'model_init' + '_' + str(self.curr_dt_time).replace(' ','').replace(':','_') + '/'
+        model_name = modelName + '_' + str(self.curr_dt_time).replace(' ','').replace(':','_') + '/'
         
         # if do not exist create one
         if not os.path.exists(model_name):
@@ -148,6 +155,6 @@ class CNN:
 
         # as of now lets use the reducedLR as the call back function
         callbacks_list = [checkpoint, LR]
-        #callbacks_list = [LR]
+        #callbacks_list = [checkpoint]
 
         return callbacks_list

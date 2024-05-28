@@ -10,4 +10,4 @@ class ImageTensor:
         # since 30fls we define the linespace of 0, 29 and get n_frames data
         img_idx = np.round(np.linspace(0, 29, self.n_frames)).astype(int)
         # 100 , 100 is the dimension of image with 3 channels
-        return [img_idx, 100, 100, 3]
+        return [img_idx, 128, 128, 3]
