@@ -16,4 +16,4 @@ Note that all images in a particular video subfolder have the same dimensions bu
 Each row of the CSV file represents one video and contains three main pieces of information - the name of the subfolder containing the 30 images of the video sample (gesture), the name of the gesture, and the numeric label (between 0-4) of the video.
 
 Live Video Test Screenshot
-![alt text](<Screenshot 2024-06-07 at 1.08.03 PM.png>)
+![alt text](<Screenshot 2024-06-07 at 1.25.56 PM.png>)
