@@ -2,10 +2,13 @@ import matplotlib.pyplot as plt
 
 class PlotShowData:
 
-    def plotSampleImage(self, sample_batch_data, sample_batch_labels):
+    def plotSampleImage(self, sample_batch_data, sample_batch_labels, train_flag):
         '''
         Function to show sample images from batch/validation data'''
-        image_count = 6
+        if(train_flag == 2):
+            image_count = 1
+        else:
+            image_count = 6
         for cnt in range(image_count):
             # plot generated sample images
             fig, ax = plt.subplots(1,2)

@@ -132,19 +132,19 @@ def main():
 
 if __name__ == '__main__':
 
-    #input_size = (100, 100)
-    # sequence_length = 20
+    input_size = (128, 128)
+    sequence_length = 30
     #modelToLoad = '/Users/jiten/Masters/Compute vision - CSC 528/CNN_Gesture_recognition/model_init_2024-05-1522_45_47.146370/model-keras'
-    #modelToLoad = '/Users/jiten/Masters/Compute vision - CSC 528/CNN_Gesture_recognition/MODEL2_2024-05-2316_56_40.851725/model-keras'
+    modelToLoad = '/Users/jiten/Masters/Compute vision - CSC 528/CNN_Gesture_recognition/MODEL2_2024-05-3013_09_41.027784/model-keras'
 
     # Parameters
     #input_size = (128, 128)
     #sequence_length = 30
     #modelToLoad = '/Users/jiten/Masters/Compute vision - CSC 528/CNN_Gesture_recognition/MODEL2_2024-05-2423_33_16.378358/model-keras.keras'
 
-    input_size = (100,100)
-    sequence_length = 30
-    modelToLoad = '/Users/jiten/Masters/Compute vision - CSC 528/CNN_Gesture_recognition/ErikModel/model-keras.keras'
+    # input_size = (100,100)
+    # sequence_length = 30
+    # modelToLoad = '/Users/jiten/Masters/Compute vision - CSC 528/CNN_Gesture_recognition/ErikModel/model-keras.keras'
 
 
 

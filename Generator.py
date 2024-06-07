@@ -29,16 +29,20 @@ class Generator:
 
         self.train_file = os.path.join(self.folder_path, "input","train.csv")
         self.val_file = os.path.join(self.folder_path, "input","val.csv")
+        self.tst_file = os.path.join(self.folder_path,"input","test.csv")
 
         #self.train_doc = np.random.permutation(open(self.train_file)).readlines()
         #self.val_doc = np.random.permutation(open(self.val_file)).readlines()
 
-        if (self.train_flag):
+        if (self.train_flag == 0):
             self.source_path = self.train_dir
             self.folder_list = np.random.permutation(open(self.train_file).readlines())
-        else:
+        elif(self.train_flag == 1):
             self.source_path = self.val_dir
             self.folder_list = np.random.permutation(open(self.val_file).readlines())
+        else:
+            self.source_path = self.val_dir
+            self.folder_list = np.random.permutation(open(self.tst_file).readlines())
 
         # set the no of sequence for whether its taining or validation
         # set bachsize, imgtensor and aurgmentation parameter
